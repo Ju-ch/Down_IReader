@@ -13,6 +13,10 @@ class i_HttpClient:
         :param cookie:
         :type cookie: str
         """
+        # link: 链接去重
+        self.link = set()
+        # downCount: 下载页面计数
+        self.downCount = 0
         self.headers = {
             'Content-Type': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
             'Accept-Encoding': 'gzip, deflate',
@@ -39,23 +43,39 @@ class i_HttpClient:
         buff = BytesIO(data)
         f = gzip.GzipFile(fileobj=buff)
         page = f.read().decode('utf-8')
-        link = set()
 
         if page != '' and page != "Array":
             if not os.path.isdir('./books/' + bid):
                 os.makedirs('./books/' + bid)
-            img_url = re.findall(r'http.*(?=\?v=)', page)
+            img_url = re.findall(r'http[s]?:(?:[a-zA-Z]|[0-9]|[$-_@.&+]|(?:%[0-9a-fA-F][0-9a-fA-F]))+[s|g](?=\?v=)', page)
             for i in img_url:
                 page = page.replace(i, re.split('/', i)[-1])
-                link.add(i)
+                self.link.add(i)
             with open('./books/' + bid + '/' + bid + '_' + cid + '.html', 'a', encoding='utf-8') as f:
                 f.write(page)
+                self.downCount += 1
+                print(".", end="")
             self.get_page(bid, str(1 + int(cid)))
-        for i in link:
+        else:
+            self.down_url(bid)
+            print("总下载" + str(self.downCount) + "个页面 ✔")
+
+    def down_url(self, bid):
+        print(self.link)
+        for i in self.link:
             urlretrieve(i, './books/' + bid + '/' + re.split('/', i)[-1])
+            self.downCount += 1
+            print(".", end="")
 
 
 if __name__ == '__main__':
-    cookie = 'pc_yz_ireader_zypc_guid=***; pc_yz_ireader_userInfo=***; Hm_lvt_***=***; ZyId=***'
+    cookie = 'pc_yz_ireader_zypc_guid=; ' \
+             'pc_yz_ireader_userInfo=; ' \
+             'Hm_lvt_=; ' \
+             'ZyId='
     page = i_HttpClient(cookie)
-    page.get_page(bid="12340946", cid="1")
+    book_list = [11611638]
+    for i in book_list:
+        print("start Down " + str(i), end="📥")
+        page.get_page(bid=str(i), cid="1")
+        print("---" * 9)
