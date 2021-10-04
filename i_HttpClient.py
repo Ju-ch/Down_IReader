@@ -51,7 +51,7 @@ class i_HttpClient:
             for i in img_url:
                 page = page.replace(i, re.split('/', i)[-1])
                 self.link.add(i)
-            with open('./books/' + bid + '/' + bid + '_' + cid + '.html', 'a', encoding='utf-8') as f:
+            with open('./books/' + bid + '/' + bid + '_' + cid + '.html', 'w', encoding='utf-8') as f:
                 f.write(page)
                 self.downCount += 1
                 print(".", end="")
@@ -61,7 +61,6 @@ class i_HttpClient:
             print("总下载" + str(self.downCount) + "个页面 ✔")
 
     def down_url(self, bid):
-        print(self.link)
         for i in self.link:
             urlretrieve(i, './books/' + bid + '/' + re.split('/', i)[-1])
             self.downCount += 1
@@ -69,12 +68,12 @@ class i_HttpClient:
 
 
 if __name__ == '__main__':
-    cookie = 'pc_yz_ireader_zypc_guid=; ' \
-             'pc_yz_ireader_userInfo=; ' \
-             'Hm_lvt_=; ' \
-             'ZyId='
+    cookie = 'pc_yz_ireader_zypc_guid=c00eAgBUVlZWBwYJUgtYAwNQUVxTVwACUV0EAgYVW1ECChQEBCVVXiN2dRQgAVckTFdwfQ5PC3dzUhkFA19RJHd0dwp1UCdEXQ; ' \
+             'pc_yz_ireader_userInfo=f373CAVSAwNSAVYCUlYGBlJVCAAHBlFWAAQBVlUDWwFcTBYCDVgRRhFUFHwDXgZADUMDBQEKRwwDU1ULD1tRBF8ARwNGWAIBWBMUVwVaEBZTQm1NQFVHXkNcUgkUVUMIGw; ' \
+             'Hm_lvt_2583df02aa8541db9378beae2ed00ba0=1616294763,1616809801,1617438869,1618623411; ' \
+             'ZyId=51e9d143607a3bab47eeb'
     page = i_HttpClient(cookie)
-    book_list = [11611638]
+    book_list = [12492459]
     for i in book_list:
         print("start Down " + str(i), end="📥")
         page.get_page(bid=str(i), cid="1")
